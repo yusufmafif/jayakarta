@@ -3,6 +3,7 @@ import Navbar from "@/components/nav/Navbar";
 import Footer from "@/components/nav/Footer";
 import { Lato } from "next/font/google";
 import Link from "next/link";
+import PricingSection from "@/components/PricingSection";
 
 const lato = Lato({
   variable: "--font-lato",
@@ -214,6 +215,8 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        <PricingSection/>
       <Footer />
     </div>
   );

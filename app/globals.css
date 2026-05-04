@@ -36,3 +36,21 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+@media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .pricing-wrapper {
+    padding: 40px 16px !important;
+  }
+}
