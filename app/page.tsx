@@ -1,65 +1,220 @@
 import Image from "next/image";
+import Navbar from "@/components/nav/Navbar";
+import Footer from "@/components/nav/Footer";
+import { Lato } from "next/font/google";
+import Link from "next/link";
+
+const lato = Lato({
+  variable: "--font-lato",
+  subsets: ["latin"],
+  weight: ["300"],
+});
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="bg-white">
+      <Navbar />
+      <div className="flex sm:flex-row flex-col min-h-[calc(100vh-64px)] items-center justify-center bg-zinc-50 font-sans ">
+        <div className="flex  min-h-[calc(100vh-64px)] w-full flex-col items-center justify-center  bg-white">
+          <h1 className="text-white font-medium text-xl mb-5 bg-gray-900 px-5 rounded-full">
+            Our Web Services
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <div className="flex flex-col items-center gap-6 text-center text-center">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              className="md:hidden h-full object-cover animate-fade-in lg:mr-25 mr-0 -mb-10"
+              src="/assets1.png"
+              alt="Next.js logo"
+              width={400}
+              height={400}
+              priority
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <h1
+              className={`${lato.className} sm:max-w-lg max-w-md md:text-5xl text-4xl leading-none  tracking-tight text-black text-center px-5`}
+            >
+              Kembangkan bisnis anda dengan kami
+            </h1>
+            <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400 text-center tracking-tight leading-tight px-5">
+              Buat website untuk bisnismu agar lebih meyakinkan di mata calon
+              customermu{" "}
+              {/* <a
+                href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+                className="font-medium text-zinc-400"
+              >
+                Templates
+              </a>{" "}
+              or the{" "}
+              <a
+                href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+                className="font-medium text-zinc-400"
+              >
+                Learning
+              </a>{" "}
+              center. */}
+            </p>
+            <div className="flex flex gap-4 text-base font-medium text-md">
+              <a
+                className="bg-foreground flex h-12 w-auto items-center  text-black hover:text-white justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[170px]"
+                href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Hubungi Kami
+              </a>
+              <Link
+                className="bg-foreground flex h-12 w-auto items-center text-black hover:text-white justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[170px]"
+                href="/#portofolio"
+              >
+                Portofolio Kami
+              </Link>
+            </div>
+          </div>
         </div>
-      </main>
+        <div className="hidden md:flex min-h-[calc(100vh-64px)] w-full flex-col items-center justify-center bg-white">
+          <Image
+            className="h-full object-cover animate-fade-in lg:mr-25 mr-0"
+            src="/assets1.png"
+            alt="Next.js logo"
+            width={700}
+            height={800}
+            priority
+          />
+        </div>
+      </div>
+
+        <div
+          id="portofolio"
+          className="flex sm:flex-row px-10 flex-col min-h-[calc(100vh-64px)] items-center justify-center font-sans bg-blue-50 rounded-tl-4xl rounded-tr-4xl"
+        >
+          <div className="max-w-6xl mx-auto">
+            <h1 className="text-3xl font-light text-center sm:mt-0 mt-5 text-black ">
+              Portofolio Kami
+            </h1>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-black mt-10">
+              <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden">
+                <img
+                  src="https://jadwal-sholat-pdf.netlify.app/Mosque.jpg?auto=compress&cs=tinysrgb&w=1260&h=750"
+                  alt="project"
+                  className="w-full h-48 object-cover"
+                />
+
+                <div className="p-5">
+                  <h2 className="text-xl font-semibold mb-2">
+                    Jadwal Sholat PDF maker
+                  </h2>
+
+                  <p className="text-sm text-zinc-600 mb-4">
+                    Jadwal Sholat is a project that provide a simple way to get
+                    the praying time and template to print out.
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      Svelte
+                    </span>
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      MapLibre
+                    </span>
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      Supabase
+                    </span>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <a
+                      href="https://jadwal-sholat-pdf.netlify.app/"
+                      className="text-sm font-medium text-blue-600 hover:underline"
+                    >
+                      Demo
+                    </a>
+                    <a
+                      href="#"
+                      className="text-sm font-medium text-zinc-700 hover:underline"
+                    >
+                      Github
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden">
+                <img
+                  src="https://jayakarta-production.netlify.app/Butcher.jpg?auto=compress&cs=tinysrgb&w=1260&h=750"
+                  alt="project"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-5">
+                  <h2 className="text-xl font-semibold mb-2">
+                    Website Ikhwan Butcher
+                  </h2>
+                  <p className="text-sm text-zinc-600 mb-4">
+                    Modern website with responsive and SEO friendly.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      Next.js
+                    </span>
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      Tailwind
+                    </span>
+                  </div>
+                  <div className="flex gap-3">
+                    <a
+                      href="https://ikhwan-butcher.vercel.app/"
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Demo
+                    </a>
+                    <a
+                      href="#"
+                      className="text-sm text-zinc-700 hover:underline"
+                    >
+                      Github
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden">
+                <img
+                  src="https://jayakarta-production.netlify.app/Butcher.jpg?auto=compress&cs=tinysrgb&w=1260&h=750"
+                  alt="project"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-5">
+                  <h2 className="text-xl font-semibold mb-2">
+                    Website Company Profile
+                  </h2>
+                  <p className="text-sm text-zinc-600 mb-4">
+                    Website modern dengan landing page responsive dan SEO
+                    friendly.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      Next.js
+                    </span>
+                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded">
+                      Tailwind
+                    </span>
+                  </div>
+                  <div className="flex gap-3">
+                    <a
+                      href="https://ikhwan-butcher.vercel.app/"
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Demo
+                    </a>
+                    <a
+                      href="#"
+                      className="text-sm text-zinc-700 hover:underline"
+                    >
+                      Github
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <Footer />
     </div>
   );
 }
