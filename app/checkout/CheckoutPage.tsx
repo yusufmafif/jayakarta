@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from 'react'
 
 const plans = [
   {
@@ -53,18 +52,19 @@ function formatRp(n: number) {
   return `Rp ${(n / 1_000_000).toLocaleString("id-ID")}jt`;
 }
 
-type Plans = "starter" | "bisnis" | "pro";
 type Step = "detail" | "payment" | "done";
 type Method = "transfer" | "qris" | "va";
 
 export default function CheckoutPage() {
-  const searchParams = useSearchParams();
 
-  const planId = searchParams.get("plan");
 
-  const [plan, setPlan] = useState(
-    plans.find((p) => p.id === planId) || plans[1],
-  );
+const searchParams = useSearchParams();
+const planId = searchParams.get("plan");
+
+const [plan, setPlan] = useState(() => {
+  return plans.find((p) => p.id === planId) ?? plans[0];
+});
+
   const [step, setStep] = useState<Step>("detail");
   const [method, setMethod] = useState<Method>("transfer");
   const [form, setForm] = useState({
@@ -138,9 +138,8 @@ export default function CheckoutPage() {
       )}
     </div>
   );
-
   return (
-    <Suspense>
+    
     <div
       className="flex sm:flex-row px-10 flex-col min-h-[calc(100vh-64px)] items-center justify-center font-sans bg-blue-50 rounded-tl-4xl rounded-tr-4xl text-black"
       style={{ alignItems: "flex-start", padding: "24px 16px" }}
@@ -754,6 +753,5 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
-    </Suspense>
   );
 }
