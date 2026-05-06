@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from 'react'
 
 const plans = [
   {
@@ -139,6 +140,7 @@ export default function CheckoutPage() {
   );
 
   return (
+    <Suspense>
     <div
       className="flex sm:flex-row px-10 flex-col min-h-[calc(100vh-64px)] items-center justify-center font-sans bg-blue-50 rounded-tl-4xl rounded-tr-4xl text-black"
       style={{ alignItems: "flex-start", padding: "24px 16px" }}
@@ -752,5 +754,6 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
+    </Suspense>
   );
 }
