@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import Link from "next/link";
 const plans = [
   {
     id: "starter",
@@ -119,7 +119,7 @@ export default function PricingSection() {
       {/* Background blobs */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
         <div
-       className="pricing-wrapper"
+          className="pricing-wrapper"
           style={{
             position: "absolute",
             top: "-10%",
@@ -171,7 +171,7 @@ export default function PricingSection() {
         }}
       >
         <h1
-        className="mt-5"
+          className="mt-5"
           style={{
             fontSize: "clamp(36px, 6vw, 64px)",
             fontWeight: 800,
@@ -193,8 +193,7 @@ export default function PricingSection() {
             lineHeight: 1.3,
           }}
         >
-          Setup gratis. Garansi uang kembali 14 hari. Tidak ada biaya
-          tersembunyi.
+          Tampil lebih profesional, meyakinkan di mata pelanggan.
         </p>
       </div>
 
@@ -430,51 +429,53 @@ export default function PricingSection() {
               </div>
 
               {/* CTA */}
-              <button
-                style={{
-                  width: "100%",
-                  padding: "14px 0",
-                  borderRadius: 12,
-                  border: plan.popular
-                    ? "none"
-                    : `1px solid rgba(255,255,255,0.12)`,
-                  background: plan.popular
-                    ? `linear-gradient(135deg, #2563EB, #1d4ed8)`
-                    : "rgba(255,255,255,0.05)",
-                  color: plan.popular ? "#ffffff" : "#d1d5db",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  letterSpacing: "0.02em",
-                  transition: "all 0.2s ease",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-                onMouseEnter={(e) => {
-                  const btn = e.currentTarget;
-                  if (!plan.popular) {
-                    btn.style.background = "rgba(255,255,255,0.1)";
-                    btn.style.borderColor = "rgba(255,255,255,0.2)";
-                  } else {
-                    btn.style.background =
-                      "linear-gradient(135deg, #1d4ed8, #1e40af)";
-                  }
-                  btn.style.transform = "scale(0.99)";
-                }}
-                onMouseLeave={(e) => {
-                  const btn = e.currentTarget;
-                  if (!plan.popular) {
-                    btn.style.background = "rgba(255,255,255,0.05)";
-                    btn.style.borderColor = "rgba(255,255,255,0.12)";
-                  } else {
-                    btn.style.background =
-                      "linear-gradient(135deg, #2563EB, #1d4ed8)";
-                  }
-                  btn.style.transform = "scale(1)";
-                }}
-              >
-                Mulai dengan {plan.name} →
-              </button>
+              <Link href={`/checkout?plan=${plan.id}`}>
+                <button
+                  style={{
+                    width: "100%",
+                    padding: "14px 0",
+                    borderRadius: 12,
+                    border: plan.popular
+                      ? "none"
+                      : `1px solid rgba(255,255,255,0.12)`,
+                    background: plan.popular
+                      ? `linear-gradient(135deg, #2563EB, #1d4ed8)`
+                      : "rgba(255,255,255,0.05)",
+                    color: plan.popular ? "#ffffff" : "#d1d5db",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    letterSpacing: "0.02em",
+                    transition: "all 0.2s ease",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                  onMouseEnter={(e) => {
+                    const btn = e.currentTarget;
+                    if (!plan.popular) {
+                      btn.style.background = "rgba(255,255,255,0.1)";
+                      btn.style.borderColor = "rgba(255,255,255,0.2)";
+                    } else {
+                      btn.style.background =
+                        "linear-gradient(135deg, #1d4ed8, #1e40af)";
+                    }
+                    btn.style.transform = "scale(0.99)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const btn = e.currentTarget;
+                    if (!plan.popular) {
+                      btn.style.background = "rgba(255,255,255,0.05)";
+                      btn.style.borderColor = "rgba(255,255,255,0.12)";
+                    } else {
+                      btn.style.background =
+                        "linear-gradient(135deg, #2563EB, #1d4ed8)";
+                    }
+                    btn.style.transform = "scale(1)";
+                  }}
+                >
+                  Mulai dengan {plan.name} →
+                </button>
+              </Link>
             </div>
           );
         })}
