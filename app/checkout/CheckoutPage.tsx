@@ -7,7 +7,7 @@ const plans = [
   {
     id: "starter",
     name: "Starter",
-    price: 4900000,
+    price: 1000000,
     color: "#10b981",
     desc: "Cocok untuk UMKM yang baru mulai online. Website simpel, cepat jadi, dan langsung bisa dipakai jualan.",
     features: [
@@ -21,28 +21,30 @@ const plans = [
   {
     id: "bisnis",
     name: "Bisnis",
-    price: 12000000,
+    price: 1700000,
     color: "#3b82f6",
     desc: "Untuk bisnis yang ingin tampil profesional dan meningkatkan kepercayaan pelanggan.",
     features: [
-      "5-7 halaman website",
-      "SEO basic (biar gampang ditemukan di Google)",
-      "Integrasi WhatsApp & form",
-      "Desain custom sesuai brand",
+      "Semua fitur Starter",
+      "Hingga 3 halaman website",
+      "Domain .com gratis 1 tahun",
+      "Google Maps",
+      "Galeri foto",
+      "Revisi 3x",
     ],
     image: "/assets.webp",
   },
   {
     id: "pro",
     name: "Pro",
-    price: 24000000,
+    price: 2500000,
     color: "#440a5f",
-    desc: "Solusi lengkap untuk bisnis serius. Cocok untuk scale up dan otomasi penjualan.",
+    desc: "Solusi lengkap untuk bisnis serius.",
     features: [
-      "Unlimited halaman",
-      "Dashboard admin",
-      "Integrasi payment (QRIS, VA, dll)",
-      "Optimasi performa & SEO advanced",
+     "Semua fitur Bisnis",
+     "10 Halaman & katalog produk 50+",
+      "Update konten",
+      "Revisi 5x",
     ],
     image: "/assets.webp",
   },
@@ -56,14 +58,12 @@ type Step = "detail" | "payment" | "done";
 type Method = "transfer" | "qris" | "va";
 
 export default function CheckoutPage() {
+  const searchParams = useSearchParams();
+  const planId = searchParams.get("plan");
 
-
-const searchParams = useSearchParams();
-const planId = searchParams.get("plan");
-
-const [plan, setPlan] = useState(() => {
-  return plans.find((p) => p.id === planId) ?? plans[0];
-});
+  const [plan, setPlan] = useState(() => {
+    return plans.find((p) => p.id === planId) ?? plans[0];
+  });
 
   const [step, setStep] = useState<Step>("detail");
   const [method, setMethod] = useState<Method>("transfer");
@@ -139,7 +139,6 @@ const [plan, setPlan] = useState(() => {
     </div>
   );
   return (
-    
     <div
       className="flex sm:flex-row px-10 flex-col min-h-[calc(100vh-64px)] items-center justify-center font-sans bg-blue-50 rounded-tl-4xl rounded-tr-4xl text-black"
       style={{ alignItems: "flex-start", padding: "24px 16px" }}
@@ -506,8 +505,8 @@ const [plan, setPlan] = useState(() => {
               {method === "transfer" &&
                 [
                   ["Bank", "BCA"],
-                  ["No. Rekening", "123 456 7890"],
-                  ["Atas Nama", "PT Webku Indonesia"],
+                  ["No. Rekening", "841 090 3491"],
+                  ["Atas Nama", "Yusuf Muhammad Afif"],
                 ].map(([l, v]) => (
                   <div
                     key={l}
@@ -589,7 +588,7 @@ const [plan, setPlan] = useState(() => {
               {/* VA */}
               {method === "va" &&
                 [
-                  ["Bank", "Mandiri"],
+                  ["Bank", "BCA"],
                   ["No. VA", "88001 2345 6789 01"],
                   ["Berlaku", "24 jam"],
                 ].map(([l, v]) => (
