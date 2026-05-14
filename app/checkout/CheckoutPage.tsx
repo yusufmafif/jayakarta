@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const plans = [
   {
-    id: "starter",
-    name: "Starter",
+    id: "basic",
+    name: "Basic",
     price: 1000000,
     color: "#10b981",
     desc: "Cocok untuk UMKM yang baru mulai online. Website simpel, cepat jadi, dan langsung bisa dipakai jualan.",
@@ -19,7 +19,7 @@ const plans = [
     image: "/assets.webp",
   },
   {
-    id: "bisnis",
+    id: "standard",
     name: "Bisnis",
     price: 1700000,
     color: "#3b82f6",
@@ -35,14 +35,14 @@ const plans = [
     image: "/assets.webp",
   },
   {
-    id: "pro",
+    id: "premium",
     name: "Pro",
     price: 2500000,
     color: "#440a5f",
     desc: "Solusi lengkap untuk bisnis serius.",
     features: [
-     "Semua fitur Bisnis",
-     "10 Halaman & katalog produk 50+",
+      "Semua fitur Bisnis",
+      "10 Halaman & katalog produk 50+",
       "Update konten",
       "Revisi 5x",
     ],
@@ -54,15 +54,50 @@ function formatRp(n: number) {
   return `Rp ${(n / 1_000_000).toLocaleString("id-ID")}jt`;
 }
 
+const checkout = async () => {
+  const data = {
+    id: 12,
+    productName: "Paket Bisnis",
+    price: 1700000,
+    quantity: 1,
+  };
+
+  const response = await fetch("/api/tokenizer", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+  const requestData = await response.json();
+  console.log({ requestData });
+
+  window.snap.pay(requestData.token);
+};
+
 type Step = "detail" | "payment" | "done";
 type Method = "transfer" | "qris" | "va";
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const planId = searchParams.get("plan");
 
   const [plan, setPlan] = useState(() => {
     return plans.find((p) => p.id === planId) ?? plans[0];
+  });
+
+  useEffect(() => {
+    const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
+    const clientKey = process.env.NEXT_PUBLIC_CLIENT;
+
+    const script = document.createElement("script");
+    script.src = snapScript;
+    script.setAttribute("data-client-key", clientKey!);
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
   });
 
   const [step, setStep] = useState<Step>("detail");
@@ -303,7 +338,14 @@ export default function CheckoutPage() {
                   <button
                     key={p.id}
                     className="tap"
-                    onClick={() => setPlan(p)}
+                    onClick={() => {
+                      setPlan(p);
+                      const params = new URLSearchParams(searchParams);
+
+                      params.set("plan", p.id);
+
+                      router.replace(`?${params.toString()}`);
+                    }}
                     style={{
                       flex: 1,
                       padding: "9px 4px",
@@ -612,7 +654,7 @@ export default function CheckoutPage() {
 
             <button
               className="tap"
-              onClick={() => setStep("done")}
+              onClick={() => checkout()}
               style={{
                 width: "100%",
                 padding: 15,
