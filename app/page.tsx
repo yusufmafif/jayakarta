@@ -18,7 +18,7 @@ export default function Home() {
       <div className="flex sm:flex-row flex-col min-h-[calc(100vh-64px)] items-center justify-center bg-zinc-50 font-sans ">
         <div className="flex  min-h-[calc(100vh-64px)] w-full flex-col items-center justify-center  bg-white">
           <h1 className="text-white font-medium text-xl mb-5 bg-gray-900 px-5 rounded-full">
-            Our Web Services
+            Web Services
           </h1>
           <div className="flex flex-col items-center gap-6 text-center text-center">
             <Image

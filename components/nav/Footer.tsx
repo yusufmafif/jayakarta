@@ -49,7 +49,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-medium mb-4">Kontak</h3>
             <ul className="space-y-2 text-sm">
-              <li>Email: jayakartaproduction@email.com</li>
+              <li>Email: jayakartaproduction@gmail.com</li>
               <li>Telp: +62 877-7201-8559</li>
               <li>Indonesia</li>
             </ul>
