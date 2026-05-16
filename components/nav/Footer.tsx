@@ -4,10 +4,10 @@ import Jayakarta from "@/public/Jayakarta.svg";
 import Burger from "@/public/burger.svg";
 import Sidebar from "../Sidebar";
 
-export default function Navbar() {
+export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <footer className="bg-gray-900 text-gray-300"  >
+      <div className="max-w-6xl mx-auto px-6 py-12" id="contact">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand */}
           <div>

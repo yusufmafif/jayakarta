@@ -43,14 +43,8 @@ export default function Home() {
               >
                 Templates
               </a>{" "}
-              or the{" "}
-              <a
-                href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                className="font-medium text-zinc-400"
-              >
-                Learning
-              </a>{" "}
-              center. */}
+              or{" "}
+             */}
             </p>
             <div className="flex flex gap-4 text-base font-medium text-md">
               <a
@@ -86,12 +80,22 @@ export default function Home() {
           id="portofolio"
           className="flex sm:flex-row px-10 flex-col min-h-[calc(100vh-64px)] items-center justify-center font-sans bg-blue-50 rounded-tl-4xl rounded-tr-4xl"
         >
-          <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-light text-center sm:mt-0 mt-5 text-black ">
-              Portofolio Kami
-            </h1>
+          <div className="max-w-6xl mx-auto ">
+           <h1
+          className="text-center mt-7 md:mt-0 mb-7 md:mb-14"
+          style={{
+            fontSize: "clamp(36px, 4vw, 64px)",
+            fontWeight: 800,
+            lineHeight: 0.9,
+            color: "#050405",
+            letterSpacing: "-0.03em",
+          }}
+        >
+          Portofolio
+          <span style={{ color: "#52a3ff" }}> Kami</span>
+        </h1>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-black mt-10">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-black mb-7">
               <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden">
                 <img
                   src="https://jadwal-sholat-pdf.netlify.app/Mosque.jpg?auto=compress&cs=tinysrgb&w=1260&h=750"

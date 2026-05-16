@@ -157,6 +157,7 @@ export default function PricingSection() {
 
       {/* Header */}
       <div
+        className="mt-14 md:mt-0"
         style={{
           textAlign: "center",
           marginBottom: 56,
