@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import { db } from "@/lib/turso";
 
 const handler = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
