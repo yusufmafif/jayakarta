@@ -2,10 +2,10 @@ import { db } from "@/lib/turso";
 
 export default async function Page() {
   const { rows } = await db.execute("SELECT * FROM users");
-console.log(rows);
+  const resultsArray = Array.from(rows);
   return (
     <ul>
-      {rows.map((row) => (
+      {resultsArray.map((row: any) => (
         <li key={row.id}>
           <p>{row.id}</p>
           <p>{row.name}</p>
