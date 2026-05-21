@@ -389,9 +389,9 @@ export default function CheckoutPage() {
               >
                 DATA PEMESAN
               </div>
-              {field("name", "Nama Lengkap", session?.user?.name)}
-              {field("business", "Nama Usaha", session?.user?.name)}
-              {field("email", "Email", session?.user?.email, "email")}
+              {field("name", "Nama Lengkap", session?.user?.name ?? "")}
+              {field("business", "Nama Usaha", session?.user?.name ?? "")}
+              {field("email", "Email", session?.user?.email ?? "", "email")}
               {field("phone", "Nomor HP", "08xxxxxxxxxx", "tel")}
             </div>
 
