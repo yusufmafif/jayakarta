@@ -4,7 +4,6 @@ import Footer from "@/components/nav/Footer";
 import { Lato } from "next/font/google";
 import Link from "next/link";
 import PricingSection from "@/components/PricingSection";
-
 const lato = Lato({
   variable: "--font-lato",
   subsets: ["latin"],
@@ -75,6 +74,7 @@ export default function Home() {
           />
         </div>
       </div>
+        <PricingSection/>
 
         <div
           id="portofolio"
@@ -220,7 +220,6 @@ export default function Home() {
           </div>
         </div>
 
-        <PricingSection/>
       <Footer />
     </div>
   );

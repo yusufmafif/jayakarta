@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const plans = [
   {
@@ -60,6 +61,7 @@ type Method = "transfer" | "qris" | "va";
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
   const router = useRouter();
   const planId = searchParams.get("plan");
@@ -69,24 +71,23 @@ export default function CheckoutPage() {
   });
 
   const checkout = async () => {
-  const data = {
-    id: `ORDER-${uuidv4()}`,
-    productName: plan.name,
-    price: plan.price + plan.price * 0.11,
-    quantity: 1,
+    const data = {
+      id: `ORDER-${uuidv4()}`,
+      productName: plan.name,
+      price: plan.price + plan.price * 0.11,
+      quantity: 1,
+    };
+    console.log(plans);
+    const response = await fetch("/api/tokenizer", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+
+    const requestData = await response.json();
+    console.log({ requestData });
+
+    window.snap.pay(requestData.token);
   };
-  console.log(plans);
-  const response = await fetch("/api/tokenizer", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
-  const requestData = await response.json();
-  console.log({ requestData });
-
-  window.snap.pay(requestData.token);
-};
-
 
   useEffect(() => {
     const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
@@ -388,9 +389,9 @@ export default function CheckoutPage() {
               >
                 DATA PEMESAN
               </div>
-              {field("name", "Nama Lengkap", "Budi Santoso")}
-              {field("business", "Nama Usaha", "Toko Maju Jaya")}
-              {field("email", "Email", "budi@email.com", "email")}
+              {field("name", "Nama Lengkap", session?.user?.name)}
+              {field("business", "Nama Usaha", session?.user?.name)}
+              {field("email", "Email", session?.user?.email, "email")}
               {field("phone", "Nomor HP", "08xxxxxxxxxx", "tel")}
             </div>
 
