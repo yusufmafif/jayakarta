@@ -10,8 +10,11 @@ let snap = new Midtrans.Snap({
 export async function POST(request) {
   const { id, productName, price, quantity } = await request.json()
 
+  // 1. Ambil URL Dev Tunnels yang sedang aktif secara otomatis dari browser
+  const origin = request.headers.get('origin') || 'http://localhost:3000';
+
   let parameter = {
-    item_details:{
+    item_details: {
         name: productName,
         price: price,
         quantity: quantity
@@ -19,6 +22,12 @@ export async function POST(request) {
     transaction_details: {
         order_id: id,
         gross_amount: price * quantity
+    },
+    // 2. Tambahkan callbacks di bawah ini agar menimpa pengaturan dashboard
+    callbacks: {
+      finish: `${origin}/thanks`,      // Halaman tujuan jika sukses (misal kembali ke beranda)
+      error: `${origin}/`,       // Halaman jika gagal
+      pending: `${origin}/`      // Halaman jika pending
     }
   } 
 
