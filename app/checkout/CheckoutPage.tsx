@@ -77,14 +77,12 @@ export default function CheckoutPage() {
       price: plan.price + plan.price * 0.11,
       quantity: 1,
     };
-    console.log(plans);
     const response = await fetch("/api/tokenizer", {
       method: "POST",
       body: JSON.stringify(data),
     });
 
     const requestData = await response.json();
-    console.log({ requestData });
 
     window.snap.pay(requestData.token);
   };

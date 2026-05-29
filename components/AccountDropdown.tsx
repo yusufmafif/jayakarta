@@ -38,7 +38,6 @@ export default function AccountDropdown() {
       </button>
     );
   }
-console.log(session);
   return (
     <div className="relative" ref={dropdownRef}>
       <button
