@@ -89,7 +89,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const snapScript =
-      process.env.ENVIRONMENT === "true"
+      process.env.NEXT_PUBLIC_ENVIRONMENT === "true"
         ? "https://app.midtrans.com/snap/snap.js"
         : "https://app.sandbox.midtrans.com/snap/snap.js";
 
