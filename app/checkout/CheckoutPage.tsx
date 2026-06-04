@@ -88,7 +88,11 @@ export default function CheckoutPage() {
   };
 
   useEffect(() => {
-    const snapScript = "https://app.midtrans.com/snap/snap.js";
+    const snapScript =
+      process.env.ENVIRONMENT === "true"
+        ? "https://app.midtrans.com/snap/snap.js"
+        : "https://app.sandbox.midtrans.com/snap/snap.js";
+
     const clientKey = process.env.NEXT_PUBLIC_CLIENT;
 
     const script = document.createElement("script");
