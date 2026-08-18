@@ -1,7 +1,10 @@
-export default function ThanksPage() {
+import ThanksPage from "./ThanksPage";
+import { Suspense } from "react";
+
+export default function Page() {
   return (
-    <div>
-      <h1>Pembayaran berhasil</h1>
-    </div>
+    <Suspense>
+      <ThanksPage />
+    </Suspense>
   );
 }

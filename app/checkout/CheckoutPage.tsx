@@ -3,61 +3,16 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
-import { useSession, signIn, signOut } from "next-auth/react";
-
-const plans = [
-  {
-    id: "basic",
-    name: "Basic",
-    price: 1000000,
-    color: "#10b981",
-    desc: "Cocok untuk UMKM yang baru mulai online. Website simpel, cepat jadi, dan langsung bisa dipakai jualan.",
-    features: [
-      "1 halaman landing page",
-      "Desain modern & mobile friendly",
-      "Gratis domain .com (1 tahun)",
-      "Setup cepat 3-5 hari",
-    ],
-    image: "/assets.webp",
-  },
-  {
-    id: "standard",
-    name: "Bisnis",
-    price: 1700000,
-    color: "#3b82f6",
-    desc: "Untuk bisnis yang ingin tampil profesional dan meningkatkan kepercayaan pelanggan.",
-    features: [
-      "Semua fitur Starter",
-      "Hingga 3 halaman website",
-      "Domain .com gratis 1 tahun",
-      "Google Maps",
-      "Galeri foto",
-      "Revisi 3x",
-    ],
-    image: "/assets.webp",
-  },
-  {
-    id: "premium",
-    name: "Pro",
-    price: 2500000,
-    color: "#440a5f",
-    desc: "Solusi lengkap untuk bisnis serius.",
-    features: [
-      "Semua fitur Bisnis",
-      "10 Halaman & katalog produk 50+",
-      "Update konten",
-      "Revisi 5x",
-    ],
-    image: "/assets.webp",
-  },
-];
-
-function formatRp(n: number) {
-  return `Rp ${(n / 1_000_000).toLocaleString("id-ID")}jt`;
-}
+import { useSession, signIn } from "next-auth/react";
+import { plans, getPlanById, TAX_RATE } from "@/domain/plan";
+import { formatRpShort } from "@/lib/format";
 
 type Step = "detail" | "payment" | "done";
 type Method = "transfer" | "qris" | "va";
+
+function generateDisplayOrderId() {
+  return `#WEB-${Date.now().toString().slice(-6)}`;
+}
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
@@ -66,23 +21,45 @@ export default function CheckoutPage() {
   const router = useRouter();
   const planId = searchParams.get("plan");
 
-  const [plan, setPlan] = useState(() => {
-    return plans.find((p) => p.id === planId) ?? plans[0];
-  });
+  const [plan, setPlan] = useState(() => getPlanById(planId));
 
   const checkout = async () => {
     const data = {
       id: `ORDER-${uuidv4()}`,
       productName: plan.name,
-      price: plan.price + plan.price * 0.11,
+      basePrice: plan.price,
       quantity: 1,
+      planId: plan.id,
+      customer: {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        business: form.business,
+      },
     };
+    setDoneOrderId(generateDisplayOrderId());
     const response = await fetch("/api/tokenizer", {
       method: "POST",
       body: JSON.stringify(data),
     });
 
+    if (response.status === 401) {
+      alert("Silakan login terlebih dahulu untuk checkout.");
+      signIn("google");
+      return;
+    }
+
     const requestData = await response.json();
+
+    if (!response.ok) {
+      alert(requestData.error ?? "Terjadi kesalahan. Silakan coba lagi.");
+      return;
+    }
+
+    if (!window.snap) {
+      alert("Metode pembayaran gagal dimuat. Muat ulang halaman lalu coba lagi.");
+      return;
+    }
 
     window.snap.pay(requestData.token);
   };
@@ -108,6 +85,7 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<Step>("detail");
   const [method, setMethod] = useState<Method>("transfer");
+  const [doneOrderId, setDoneOrderId] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -116,7 +94,7 @@ export default function CheckoutPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const total = Math.round(plan.price * 1.11);
+  const total = Math.round(plan.price * (1 + TAX_RATE));
   const acc = plan.color;
 
   const validate = () => {
@@ -315,7 +293,7 @@ export default function CheckoutPage() {
               </div>
 
               <div style={{ fontWeight: 800, color: plan.color }}>
-                {formatRp(plan.price)}
+                {formatRpShort(plan.price)}
               </div>
             </div>
 
@@ -494,30 +472,80 @@ export default function CheckoutPage() {
                   letterSpacing: "-.03em",
                 }}
               >
-                {formatRp(total)}
+                {formatRpShort(total)}
               </div>
               <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
                 Paket {plan.name} · sudah termasuk PPN 11%
               </div>
             </div>
 
-            <button
-              className="tap"
-              onClick={() => checkout()}
-              style={{
-                width: "100%",
-                padding: 15,
-                borderRadius: 14,
-                border: "none",
-                background: acc,
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: 700,
-                boxShadow: `0 8px 24px ${acc}40`,
-              }}
-            >
-              Bayar Sekarang
-            </button>
+            {session ? (
+              <button
+                className="tap"
+                onClick={() => checkout()}
+                style={{
+                  width: "100%",
+                  padding: 15,
+                  borderRadius: 14,
+                  border: "none",
+                  background: acc,
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  boxShadow: `0 8px 24px ${acc}40`,
+                }}
+              >
+                Bayar Sekarang
+              </button>
+            ) : (
+              <div
+                style={{
+                  background: "#fff",
+                  borderRadius: 16,
+                  padding: 20,
+                  textAlign: "center",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: "#0f172a",
+                    marginBottom: 6,
+                  }}
+                >
+                  Login dulu untuk melanjutkan
+                </div>
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: "#64748b",
+                    lineHeight: 1.6,
+                    margin: "0 0 14px",
+                  }}
+                >
+                  Pembayaran hanya bisa dilakukan oleh user yang sudah login.
+                </p>
+                <button
+                  className="tap"
+                  onClick={() => signIn("google")}
+                  style={{
+                    width: "100%",
+                    padding: 14,
+                    borderRadius: 14,
+                    border: "none",
+                    background: acc,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: 700,
+                    boxShadow: `0 8px 24px ${acc}40`,
+                  }}
+                >
+                  Login dengan Google
+                </button>
+              </div>
+            )}
             <p
               style={{
                 fontSize: 11,
@@ -600,8 +628,8 @@ export default function CheckoutPage() {
             >
               {[
                 ["Paket", `Website ${plan.name}`],
-                ["Total dibayar", formatRp(total)],
-                ["No. Order", `#WEB-${Date.now().toString().slice(-6)}`],
+                ["Total dibayar", formatRpShort(total)],
+                ["No. Order", doneOrderId ?? "-"],
               ].map(([l, v]) => (
                 <div
                   key={l}

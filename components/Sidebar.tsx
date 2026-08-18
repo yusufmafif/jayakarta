@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import Burger from '@/public/burger.svg'
 import Cross from '@/public/cross.svg'
 import Jayakarta from "@/public/Jayakarta.svg"
@@ -9,6 +10,7 @@ import Jayakarta from "@/public/Jayakarta.svg"
 
 export default function Sidebar() {
     const [open, setOpen] = useState(false)
+    const { data: session } = useSession()
 
     return (
         <>
@@ -34,17 +36,19 @@ export default function Sidebar() {
                     <Jayakarta className="w-30 h-10 m-3" />
                 </div>
 
-                <nav className="flex flex-col p-4 gap-2">
-                    <Link href="/" className="hover:bg-gray-800 p-2 rounded">
-                        Dashboard
-                    </Link>
-                    <Link href="/orders" className="hover:bg-gray-800 p-2 rounded">
-                        Orders
-                    </Link>
-                    <Link href="/users" className="hover:bg-gray-800 p-2 rounded">
-                        Users
-                    </Link>
-                </nav>
+                {session?.user?.role === "admin" && (
+                    <nav className="flex flex-col p-4 gap-2">
+                        <Link href="/admin" className="hover:bg-gray-800 p-2 rounded">
+                            Dashboard
+                        </Link>
+                        <Link href="/admin/orders" className="hover:bg-gray-800 p-2 rounded">
+                            Orders
+                        </Link>
+                        <Link href="/admin/users" className="hover:bg-gray-800 p-2 rounded">
+                            Users
+                        </Link>
+                    </nav>
+                )}
             </aside>
         </>
     )

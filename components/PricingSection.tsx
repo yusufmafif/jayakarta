@@ -340,7 +340,7 @@ export default function PricingSection() {
                   <span
                     style={{ fontSize: 14, fontWeight: 400, color: "#6b7280" }}
                   >
-                    /{yearly ? "thn" : "bln"}
+                    {yearly ? "thn" : ""}
                   </span>
                 </div>
                 {yearly && (
