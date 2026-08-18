@@ -83,6 +83,26 @@ export async function findAllOrders(): Promise<Order[]> {
   return result.rows as unknown as Order[];
 }
 
+export interface OrderWithInvoice extends Order {
+  invoice_number: string | null;
+}
+
+export async function findOrdersByUserId(
+  userId: number,
+): Promise<OrderWithInvoice[]> {
+  const result = await db.execute({
+    sql: `
+      SELECT o.*, p.invoice_number
+      FROM orders o
+      LEFT JOIN purchases p ON p.order_id = o.order_id
+      WHERE o.user_id = ?
+      ORDER BY o.id DESC
+    `,
+    args: [userId],
+  });
+  return result.rows as unknown as OrderWithInvoice[];
+}
+
 export async function getOrderStats(): Promise<{
   totalOrders: number;
   paidOrders: number;

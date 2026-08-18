@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { initiateCheckout, CheckoutError } from "@/services/payment.service";
 import { authOptions } from "@/services/auth.config";
-import { findUserByEmail } from "@/repositories/users.repository";
+import { findUserByEmail } from "@/services/user.service";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();

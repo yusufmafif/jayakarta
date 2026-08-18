@@ -4,9 +4,11 @@
 import {
   createOrder,
   findAllOrders,
+  findOrdersByUserId,
   getOrderStats,
   updateOrderStatus,
   type CreateOrderInput,
+  type OrderWithInvoice,
 } from "@/repositories/orders.repository";
 import {
   createPurchase,
@@ -28,6 +30,12 @@ export async function createPurchaseRecord(
 
 export async function listOrders(): Promise<Order[]> {
   return findAllOrders();
+}
+
+export async function listOrdersForUser(
+  userId: number,
+): Promise<OrderWithInvoice[]> {
+  return findOrdersByUserId(userId);
 }
 
 export async function getAdminStats() {

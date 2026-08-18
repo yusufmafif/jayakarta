@@ -2,11 +2,12 @@
 // Logika aplikasi seputar user — mengorkestrasi repository.
 
 import {
-  findUserByEmail,
+  findUserByEmail as findUserByEmailRepo,
   createUser,
   updateUserRole,
+  findAllUsers,
 } from "@/repositories/users.repository";
-import type { UserRole } from "@/domain/user";
+import type { User, UserRole } from "@/domain/user";
 
 export interface FindOrCreateUserInput {
   email: string;
@@ -27,10 +28,18 @@ function roleForEmail(email: string): UserRole {
  * Ambil user; kalau belum ada, buat baru.
  * Mengembalikan role user (admin/user) — admin ditentukan dari env ADMIN_EMAILS.
  */
+export async function findUserByEmail(email: string): Promise<User | null> {
+  return findUserByEmailRepo(email);
+}
+
+export async function listAllUsers(): Promise<User[]> {
+  return findAllUsers();
+}
+
 export async function findOrCreateUser(
   input: FindOrCreateUserInput,
 ): Promise<UserRole> {
-  const existing = await findUserByEmail(input.email);
+  const existing = await findUserByEmailRepo(input.email);
 
   if (existing) {
     const desiredRole = roleForEmail(input.email);

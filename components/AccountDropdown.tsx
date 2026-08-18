@@ -2,6 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function AccountDropdown() {
@@ -67,6 +68,13 @@ export default function AccountDropdown() {
               {session.user?.email}
             </p>
           </div>
+
+          <Link
+            href={session.user?.role === "admin" ? "/admin" : "/orders"}
+            className="block w-full px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
+          >
+            {session.user?.role === "admin" ? "Dashboard" : "Pesanan Saya"}
+          </Link>
 
           <button
             onClick={() => signOut()}

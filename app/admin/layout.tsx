@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { authOptions } from "@/services/auth.config";
+import Jayakarta from "@/public/Jayakarta.svg";
 
 export default async function AdminLayout({
   children,
@@ -24,8 +25,8 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-gray-100 font-sans">
       <header className="sticky top-0 z-10 bg-gray-900 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link href="/admin" className="text-lg font-bold">
-            Jayakarta Admin
+          <Link href="/admin">
+            <Jayakarta className="h-8 w-auto" />
           </Link>
           <nav className="flex items-center gap-5 text-sm">
             {navLinks.map((link) => (
@@ -33,7 +34,7 @@ export default async function AdminLayout({
                 {link.label}
               </Link>
             ))}
-            <Link href="/" className="text-gray-400 hover:text-white">
+            <Link href="/" className="text-gray-300 hover:text-white">
               ← Situs
             </Link>
           </nav>

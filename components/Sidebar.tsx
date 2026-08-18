@@ -36,6 +36,13 @@ export default function Sidebar() {
                     <Jayakarta className="w-30 h-10 m-3" />
                 </div>
 
+                {session && (
+                    <nav className="flex flex-col p-4 gap-2">
+                        <Link href="/orders" className="hover:bg-gray-800 p-2 rounded">
+                            Pesanan Saya
+                        </Link>
+                    </nav>
+                )}
                 {session?.user?.role === "admin" && (
                     <nav className="flex flex-col p-4 gap-2">
                         <Link href="/admin" className="hover:bg-gray-800 p-2 rounded">
