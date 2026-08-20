@@ -1,8 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-const plans = [
+
+interface Product {
+  id: number;
+  slug: string;
+  name: string;
+  description: string | null;
+  price: number;
+  features: string[];
+}
+
+interface Feature {
+  text: string;
+  included: boolean;
+}
+
+interface Plan {
+  id: string;
+  name: string;
+  tagline: string;
+  monthly: number;
+  yearly: number;
+  color: string;
+  accent: string;
+  popular?: boolean;
+  features: Feature[];
+}
+
+// Default plans jika API belum load (fallback)
+const defaultPlans: Plan[] = [
   {
     id: "basic",
     name: "Basic",
@@ -61,9 +89,66 @@ function formatRupiah(n: number) {
   return `Rp ${(n / 1000).toFixed(0)}rb`;
 }
 
+// Map color berdasarkan slug
+const colorMap: Record<string, { color: string; accent: string }> = {
+  basic: { color: "#6EE7B7", accent: "#059669" },
+  standard: { color: "#93C5FD", accent: "#2563EB" },
+  premium: { color: "#F9A8D4", accent: "#DB2777" },
+};
+
+// Yearly price multiplier (12 bulan + diskon)
+const yearlyMultiplier: Record<string, number> = {
+  basic: 4.9,
+  standard: 6.76,
+  premium: 9.6,
+};
+
 export default function PricingSection() {
   const [yearly, setYearly] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  async function fetchProducts() {
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      if (data.products && data.products.length > 0) {
+        // Map database products ke format yang dibutuhkan PricingSection
+        const mappedPlans = data.products.map((product: Product, index: number) => {
+          const slug = product.slug;
+          const colors = colorMap[slug] || { color: "#6EE7B7", accent: "#059669" };
+          const monthlyPrice = product.price;
+          const yearlyPrice = Math.round(monthlyPrice * (yearlyMultiplier[slug] || 4.9));
+
+          return {
+            id: slug,
+            name: product.name,
+            tagline: product.description || "",
+            monthly: monthlyPrice,
+            yearly: yearlyPrice,
+            color: colors.color,
+            accent: colors.accent,
+            popular: slug === "standard",
+            features: product.features.map((f: string): Feature => ({ text: f, included: true })),
+          } as Plan;
+        });
+
+        // Sort by price
+        mappedPlans.sort((a: Plan, b: Plan) => a.monthly - b.monthly);
+        setPlans(mappedPlans);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      // Gunakan default plans jika gagal
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div
@@ -193,289 +278,296 @@ export default function PricingSection() {
         </p>
       </div>
 
+      {/* Loading indicator */}
+      {loading && (
+        <div style={{ color: "#6b7280", fontSize: 14 }}>Memuat paket...</div>
+      )}
+
       {/* Cards */}
-      <div
-        className="pricing-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 20,
-          width: "100%",
-          maxWidth: 1200,
-          position: "relative",
-          zIndex: 0,
-        }}
-      >
-        {plans.map((plan, i) => {
-          const price = yearly ? plan.yearly : plan.monthly;
-          const isHovered = hovered === plan.id;
+      {!loading && (
+        <div
+          className="pricing-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 20,
+            width: "100%",
+            maxWidth: 1200,
+            position: "relative",
+            zIndex: 0,
+          }}
+        >
+          {plans.map((plan, i) => {
+            const price = yearly ? plan.yearly : plan.monthly;
+            const isHovered = hovered === plan.id;
 
-          return (
-            <div
-              key={plan.id}
-              className="plan-card sm:mx-0 mx-5"
-              onMouseEnter={() => setHovered(plan.id)}
-              onMouseLeave={() => setHovered(null)}
-              style={{
-                background: plan.popular
-                  ? "linear-gradient(145deg, rgba(37,99,235,0.18) 0%, rgba(15,15,15,1) 50%)"
-                  : "#111111",
-                border: plan.popular
-                  ? `1px solid rgba(147,197,253,0.35)`
-                  : isHovered
-                    ? `1px solid rgba(255,255,255,0.15)`
-                    : `1px solid rgba(255,255,255,0.07)`,
-                borderRadius: 24,
-                padding: "15px 28px",
-                display: "flex",
-                flexDirection: "column",
-                gap: 28,
-                position: "relative",
-                overflow: "hidden",
-                animation: `fadeUp 0.6s ease ${0.1 + i * 0.12}s both`,
-                boxShadow: plan.popular
-                  ? `0 0 60px rgba(37,99,235,0.15), 0 20px 60px rgba(0,0,0,0.5)`
-                  : isHovered
-                    ? `0 20px 60px rgba(0,0,0,0.4)`
-                    : "0 8px 32px rgba(0,0,0,0.3)",
-              }}
-            >
-              {/* Decorative top glow */}
+            return (
               <div
+                key={plan.id}
+                className="plan-card sm:mx-0 mx-5"
+                onMouseEnter={() => setHovered(plan.id)}
+                onMouseLeave={() => setHovered(null)}
                 style={{
-                  position: "absolute",
-                  top: -60,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 200,
-                  height: 120,
-                  background: `radial-gradient(ellipse, ${plan.color}22 0%, transparent 70%)`,
-                  pointerEvents: "none",
-                  transition: "opacity 0.3s",
-                  opacity: isHovered ? 1 : 0.5,
+                  background: plan.popular
+                    ? "linear-gradient(145deg, rgba(37,99,235,0.18) 0%, rgba(15,15,15,1) 50%)"
+                    : "#111111",
+                  border: plan.popular
+                    ? `1px solid rgba(147,197,253,0.35)`
+                    : isHovered
+                      ? `1px solid rgba(255,255,255,0.15)`
+                      : `1px solid rgba(255,255,255,0.07)`,
+                  borderRadius: 24,
+                  padding: "15px 28px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 28,
+                  position: "relative",
+                  overflow: "hidden",
+                  animation: `fadeUp 0.6s ease ${0.1 + i * 0.12}s both`,
+                  boxShadow: plan.popular
+                    ? `0 0 60px rgba(37,99,235,0.15), 0 20px 60px rgba(0,0,0,0.5)`
+                    : isHovered
+                      ? `0 20px 60px rgba(0,0,0,0.4)`
+                      : "0 8px 32px rgba(0,0,0,0.3)",
                 }}
-              />
-
-              {/* Popular badge */}
-              {plan.popular && (
+              >
+                {/* Decorative top glow */}
                 <div
                   style={{
                     position: "absolute",
-                    top: 20,
-                    right: 20,
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: "0.12em",
-                    color: "#93C5FD",
-                    background: "rgba(37,99,235,0.25)",
-                    border: "1px solid rgba(147,197,253,0.3)",
-                    padding: "4px 12px",
-                    borderRadius: 999,
-                    textTransform: "uppercase",
+                    top: -60,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: 200,
+                    height: 120,
+                    background: `radial-gradient(ellipse, ${plan.color}22 0%, transparent 70%)`,
+                    pointerEvents: "none",
+                    transition: "opacity 0.3s",
+                    opacity: isHovered ? 1 : 0.5,
                   }}
-                >
-                  Populer
-                </div>
-              )}
+                />
 
-              {/* Plan header */}
-              <div>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    background: `${plan.color}20`,
-                    border: `1px solid ${plan.color}40`,
-                    marginBottom: 16,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                {/* Popular badge */}
+                {plan.popular && (
                   <div
                     style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: "50%",
-                      background: plan.color,
+                      position: "absolute",
+                      top: 20,
+                      right: 20,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      letterSpacing: "0.12em",
+                      color: "#93C5FD",
+                      background: "rgba(37,99,235,0.25)",
+                      border: "1px solid rgba(147,197,253,0.3)",
+                      padding: "4px 12px",
+                      borderRadius: 999,
+                      textTransform: "uppercase",
                     }}
-                  />
-                </div>
-                <div
-                  style={{
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: "#f9fafb",
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  {plan.name}
-                </div>
-                <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>
-                  {plan.tagline}
-                </div>
-              </div>
-
-              {/* Price */}
-              <div
-                style={{
-                  borderTop: "1px solid rgba(255,255,255,0.07)",
-                  paddingTop: 24,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 800,
-                    color: "#ffffff",
-                    letterSpacing: "-0.04em",
-                    lineHeight: 1,
-                    transition: "color 0.2s",
-                  }}
-                >
-                  <span style={{ color: plan.color }}>
-                    {formatRupiah(price)}
-                  </span>
-                  <span
-                    style={{ fontSize: 14, fontWeight: 400, color: "#6b7280" }}
                   >
-                    {yearly ? "thn" : ""}
-                  </span>
-                </div>
-                {yearly && (
-                  <div style={{ fontSize: 12, color: "#4b5563", marginTop: 0 }}>
-                    setara {formatRupiah(Math.round(price / 12))}/bln
+                    Populer
                   </div>
                 )}
-              </div>
 
-              {/* Features */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 10,
-                  flex: 1,
-                }}
-              >
-                {plan.features.map((f, fi) => (
+                {/* Plan header */}
+                <div>
                   <div
-                    key={fi}
-                    className="feature-row"
                     style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: `${plan.color}20`,
+                      border: `1px solid ${plan.color}40`,
+                      marginBottom: 16,
                       display: "flex",
                       alignItems: "center",
-                      gap: 10,
-                      fontSize: 13,
-                      color: f.included ? "#d1d5db" : "#374151",
-                      animationDelay: `${0.1 + i * 0.12 + fi * 0.04}s`,
+                      justifyContent: "center",
                     }}
                   >
                     <div
                       style={{
-                        width: 18,
-                        height: 18,
+                        width: 14,
+                        height: 14,
                         borderRadius: "50%",
-                        flexShrink: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: f.included
-                          ? `${plan.color}20`
-                          : "rgba(255,255,255,0.04)",
+                        background: plan.color,
                       }}
-                    >
-                      {f.included ? (
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 10 10"
-                          fill="none"
-                        >
-                          <path
-                            d="M2 5l2 2 4-4"
-                            stroke={plan.color}
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      ) : (
-                        <div
-                          style={{
-                            width: 6,
-                            height: 1,
-                            background: "#374151",
-                            borderRadius: 1,
-                          }}
-                        />
-                      )}
-                    </div>
-                    <span
-                      style={{
-                        textDecoration: f.included ? "none" : "line-through",
-                        textDecorationColor: "#374151",
-                      }}
-                    >
-                      {f.text}
-                    </span>
+                    />
                   </div>
-                ))}
-              </div>
+                  <div
+                    style={{
+                      fontSize: 22,
+                      fontWeight: 700,
+                      color: "#f9fafb",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
+                    {plan.name}
+                  </div>
+                  <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>
+                    {plan.tagline}
+                  </div>
+                </div>
 
-              {/* CTA */}
-              <Link href={`/checkout?plan=${plan.id}`}>
-                <button
+                {/* Price */}
+                <div
                   style={{
-                    width: "100%",
-                    padding: "14px 0",
-                    borderRadius: 12,
-                    border: plan.popular
-                      ? "none"
-                      : `1px solid rgba(255,255,255,0.12)`,
-                    background: plan.popular
-                      ? `linear-gradient(135deg, #2563EB, #1d4ed8)`
-                      : "rgba(255,255,255,0.05)",
-                    color: plan.popular ? "#ffffff" : "#d1d5db",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    letterSpacing: "0.02em",
-                    transition: "all 0.2s ease",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                  onMouseEnter={(e) => {
-                    const btn = e.currentTarget;
-                    if (!plan.popular) {
-                      btn.style.background = "rgba(255,255,255,0.1)";
-                      btn.style.borderColor = "rgba(255,255,255,0.2)";
-                    } else {
-                      btn.style.background =
-                        "linear-gradient(135deg, #1d4ed8, #1e40af)";
-                    }
-                    btn.style.transform = "scale(0.99)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const btn = e.currentTarget;
-                    if (!plan.popular) {
-                      btn.style.background = "rgba(255,255,255,0.05)";
-                      btn.style.borderColor = "rgba(255,255,255,0.12)";
-                    } else {
-                      btn.style.background =
-                        "linear-gradient(135deg, #2563EB, #1d4ed8)";
-                    }
-                    btn.style.transform = "scale(1)";
+                    borderTop: "1px solid rgba(255,255,255,0.07)",
+                    paddingTop: 24,
                   }}
                 >
-                  Mulai dengan {plan.name} →
-                </button>
-              </Link>
-            </div>
-          );
-        })}
-      </div>
+                  <div
+                    style={{
+                      fontSize: 40,
+                      fontWeight: 800,
+                      color: "#ffffff",
+                      letterSpacing: "-0.04em",
+                      lineHeight: 1,
+                      transition: "color 0.2s",
+                    }}
+                  >
+                    <span style={{ color: plan.color }}>
+                      {formatRupiah(price)}
+                    </span>
+                    <span
+                      style={{ fontSize: 14, fontWeight: 400, color: "#6b7280" }}
+                    >
+                      {yearly ? "thn" : ""}
+                    </span>
+                  </div>
+                  {yearly && (
+                    <div style={{ fontSize: 12, color: "#4b5563", marginTop: 0 }}>
+                      setara {formatRupiah(Math.round(price / 12))}/bln
+                    </div>
+                  )}
+                </div>
+
+                {/* Features */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10,
+                    flex: 1,
+                  }}
+                >
+                  {plan.features.map((f: Feature, fi: number) => (
+                    <div
+                      key={fi}
+                      className="feature-row"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        fontSize: 13,
+                        color: f.included ? "#d1d5db" : "#374151",
+                        animationDelay: `${0.1 + i * 0.12 + fi * 0.04}s`,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 18,
+                          height: 18,
+                          borderRadius: "50%",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          background: f.included
+                            ? `${plan.color}20`
+                            : "rgba(255,255,255,0.04)",
+                        }}
+                      >
+                        {f.included ? (
+                          <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 10 10"
+                            fill="none"
+                          >
+                            <path
+                              d="M2 5l2 2 4-4"
+                              stroke={plan.color}
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        ) : (
+                          <div
+                            style={{
+                              width: 6,
+                              height: 1,
+                              background: "#374151",
+                              borderRadius: 1,
+                            }}
+                          />
+                        )}
+                      </div>
+                      <span
+                        style={{
+                          textDecoration: f.included ? "none" : "line-through",
+                          textDecorationColor: "#374151",
+                        }}
+                      >
+                        {f.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <Link href={`/checkout?plan=${plan.id}`}>
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "14px 0",
+                      borderRadius: 12,
+                      border: plan.popular
+                        ? "none"
+                        : `1px solid rgba(255,255,255,0.12)`,
+                      background: plan.popular
+                        ? `linear-gradient(135deg, #2563EB, #1d4ed8)`
+                        : "rgba(255,255,255,0.05)",
+                      color: plan.popular ? "#ffffff" : "#d1d5db",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      letterSpacing: "0.02em",
+                      transition: "all 0.2s ease",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      const btn = e.currentTarget;
+                      if (!plan.popular) {
+                        btn.style.background = "rgba(255,255,255,0.1)";
+                        btn.style.borderColor = "rgba(255,255,255,0.2)";
+                      } else {
+                        btn.style.background =
+                          "linear-gradient(135deg, #1d4ed8, #1e40af)";
+                      }
+                      btn.style.transform = "scale(0.99)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const btn = e.currentTarget;
+                      if (!plan.popular) {
+                        btn.style.background = "rgba(255,255,255,0.05)";
+                        btn.style.borderColor = "rgba(255,255,255,0.12)";
+                      } else {
+                        btn.style.background =
+                          "linear-gradient(135deg, #2563EB, #1d4ed8)";
+                      }
+                      btn.style.transform = "scale(1)";
+                    }}
+                  >
+                    Mulai dengan {plan.name} →
+                  </button>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

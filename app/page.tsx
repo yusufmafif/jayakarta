@@ -46,14 +46,12 @@ export default function Home() {
              */}
             </p>
             <div className="flex flex gap-4 text-base font-medium text-md">
-              <a
+              <Link
                 className="bg-foreground flex h-12 w-auto items-center  text-black hover:text-white justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[170px]"
-                href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/contact"
               >
                 Hubungi Kami
-              </a>
+              </Link>
               <Link
                 className="bg-foreground flex h-12 w-auto items-center text-black hover:text-white justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[170px]"
                 href="/#portofolio"
